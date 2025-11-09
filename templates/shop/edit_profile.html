@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Редактировать профиль - Xide{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="mb-4">
+                <a href="{% url 'shop:profile' %}" style="color: var(--steam-highlight); text-decoration: none;">
+                    <i class="bi bi-arrow-left me-2"></i>Назад к профилю
+                </a>
+            </div>
+            
+            <h2 class="mb-4" style="color: var(--steam-highlight);">
+                <i class="bi bi-pencil-square me-2"></i>Редактирование профиля
+            </h2>
+            
+            <div class="card" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border: 1px solid rgba(102, 192, 244, 0.3);">
+                <div class="card-body p-4">
+                    <form method="POST" action="{% url 'shop:edit_profile' %}">
+                        {% csrf_token %}
+                        
+
+                        <h5 class="mb-3" style="color: var(--steam-highlight);">
+                            <i class="bi bi-person-badge me-2"></i>Основная информация
+                        </h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="username" class="form-label" style="color: var(--steam-text);">
+                                    Имя пользователя <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="username" 
+                                       name="username" 
+                                       value="{{ user.username }}" 
+                                       required
+                                       style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: var(--steam-text);">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label" style="color: var(--steam-text);">
+                                    Email <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       value="{{ user.email }}" 
+                                       required
+                                       style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: var(--steam-text);">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label" style="color: var(--steam-text);">
+                                    Имя
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="first_name" 
+                                       name="first_name" 
+                                       value="{{ user.first_name }}"
+                                       style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: var(--steam-text);">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label" style="color: var(--steam-text);">
+                                    Фамилия
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="last_name" 
+                                       name="last_name" 
+                                       value="{{ user.last_name }}"
+                                       style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: var(--steam-text);">
+                            </div>
+                        </div>
+                        
+                        <hr style="border-color: rgba(102, 192, 244, 0.2); margin: 2rem 0;">
+                        
+
+                        <h5 class="mb-3" style="color: var(--steam-highlight);">
+                            <i class="bi bi-shield-lock me-2"></i>Изменение пароля
+                        </h5>
+                        
+                        <div class="alert alert-info mb-3" style="background: rgba(6, 191, 255, 0.1); border: 1px solid rgba(6, 191, 255, 0.3); color: var(--steam-text);">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Оставьте поля пустыми, если не хотите менять пароль
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label" style="color: var(--steam-text);">
+                                Текущий пароль
+                            </label>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="current_password" 
+                                   name="current_password"
+                                   style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: var(--steam-text);">
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="new_password" class="form-label" style="color: var(--steam-text);">
+                                    Новый пароль
+                                </label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="new_password" 
+                                       name="new_password"
+                                       style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: var(--steam-text);">
+                                <small style="color: var(--steam-text-dark);">Минимум 6 символов</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirm_password" class="form-label" style="color: var(--steam-text);">
+                                    Подтвердите пароль
+                                </label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="confirm_password" 
+                                       name="confirm_password"
+                                       style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: var(--steam-text);">
+                            </div>
+                        </div>
+                        
+                        <hr style="border-color: rgba(102, 192, 244, 0.2); margin: 2rem 0;">
+                        
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'shop:profile' %}" 
+                               class="btn btn-secondary"
+                               style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                                <i class="bi bi-x-circle me-2"></i>Отмена
+                            </a>
+                            <button type="submit" 
+                                    class="btn btn-primary" 
+                                    style="background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%); border: none;">
+                                <i class="bi bi-check-circle me-2"></i>Сохранить изменения
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card" style="background: rgba(6, 191, 255, 0.1); border: 1px solid rgba(6, 191, 255, 0.3);">
+                        <div class="card-body">
+                            <h6 style="color: var(--steam-highlight);">
+                                <i class="bi bi-shield-check me-2"></i>Безопасность
+                            </h6>
+                            <p style="color: var(--steam-text-dark); font-size: 0.9rem; margin-bottom: 0;">
+                                Используйте сложный пароль и не делитесь им с другими
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card" style="background: rgba(6, 191, 255, 0.1); border: 1px solid rgba(6, 191, 255, 0.3);">
+                        <div class="card-body">
+                            <h6 style="color: var(--steam-highlight);">
+                                <i class="bi bi-info-circle me-2"></i>Уведомления
+                            </h6>
+                            <p style="color: var(--steam-text-dark); font-size: 0.9rem; margin-bottom: 0;">
+                                На указанный email будут приходить уведомления о заказах
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        background: rgba(0,0,0,0.4);
+        border-color: var(--steam-highlight);
+        box-shadow: 0 0 0 0.2rem rgba(102, 192, 244, 0.25);
+        color: var(--steam-text);
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}

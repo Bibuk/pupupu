@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Регистрация - Xide{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border-radius: 10px;">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4" style="color: var(--steam-highlight);">
+                        <i class="bi bi-person-plus me-2"></i>Регистрация
+                    </h2>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label" style="color: var(--steam-text);">Имя пользователя</label>
+                            <input type="text" class="form-control form-control-lg" id="username" name="username" 
+                                   required minlength="3" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white;">
+                            <small style="color: var(--steam-text-dark);">Минимум 3 символа</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label" style="color: var(--steam-text);">Email</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" 
+                                   required style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password1" class="form-label" style="color: var(--steam-text);">Пароль</label>
+                            <input type="password" class="form-control form-control-lg" id="password1" name="password1" 
+                                   required minlength="6" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white;">
+                            <small style="color: var(--steam-text-dark);">Минимум 6 символов</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password2" class="form-label" style="color: var(--steam-text);">Подтвердите пароль</label>
+                            <input type="password" class="form-control form-control-lg" id="password2" name="password2" 
+                                   required minlength="6" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white;">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-lg w-100 mb-3" 
+                                style="background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%); border: none; font-weight: 600;">
+                            <i class="bi bi-person-check me-2"></i>Зарегистрироваться
+                        </button>
+                    </form>
+                    
+                    <hr style="border-color: rgba(102, 192, 244, 0.2);">
+                    
+                    <div class="text-center">
+                        <p class="mb-0" style="color: var(--steam-text-dark);">
+                            Уже есть аккаунт? 
+                            <a href="{% url 'shop:login' %}" style="color: var(--steam-highlight); text-decoration: none;">
+                                Войти
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

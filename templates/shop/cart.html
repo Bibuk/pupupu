@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Корзина - Xide{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4"><i class="bi bi-cart3 me-2"></i>Корзина</h1>
+
+    {% if cart.items.all %}
+    <div class="row">
+        <div class="col-lg-8">
+            {% for item in cart.items.all %}
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            {% if item.game.cover_image %}
+                            <img src="{{ item.game.cover_image.url }}" class="img-fluid rounded" alt="{{ item.game.title }}">
+                            {% else %}
+                            <img src="https://via.placeholder.com/150x200?text={{ item.game.title }}" class="img-fluid rounded" alt="{{ item.game.title }}">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <h5>{{ item.game.title }}</h5>
+                            <p class="text-muted mb-0">{{ item.game.platform }}</p>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <form method="post" action="{% url 'shop:update_cart_item' item.id %}">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" 
+                                       min="1" class="form-control form-control-sm" 
+                                       onchange="this.form.submit()">
+                            </form>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <p class="mb-0 fw-bold fs-5">{{ item.total_price }} ₽</p>
+                            <p class="text-muted small mb-0">{{ item.game.final_price }} ₽ × {{ item.quantity }}</p>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a href="{% url 'shop:remove_from_cart' item.id %}" 
+                               class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Удалить товар из корзины?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 100px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Итого</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Товаров:</span>
+                        <span>{{ cart.total_items }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Сумма:</strong>
+                        <strong class="fs-4">{{ cart.total_price }} ₽</strong>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'shop:checkout' %}" class="btn btn-success btn-lg">
+                            <i class="bi bi-credit-card me-2"></i>Оформить заказ
+                        </a>
+                        <a href="{% url 'shop:catalog' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left me-2"></i>Продолжить покупки
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-cart-x display-1 text-muted mb-4"></i>
+        <h3>Корзина пуста</h3>
+        <p class="text-muted mb-4">Добавьте игры из каталога</p>
+        <a href="{% url 'shop:catalog' %}" class="btn btn-primary">
+            <i class="bi bi-shop me-2"></i>Перейти в каталог
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="hero-section text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 animate__animated animate__fadeInLeft">
+                <h1 class="display-3 fw-bold mb-4">Добро пожаловать в Xide</h1>
+                <p class="lead mb-4">Огромный маркетплейс видеоигр для всех платформ. Лучшие цены и мгновенная доставка!</p>
+                <a href="{% url 'shop:catalog' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-shop me-2"></i>Перейти в каталог
+                </a>
+            </div>
+            <div class="col-lg-6 animate__animated animate__fadeInRight">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=400&fit=crop" 
+                     class="img-fluid rounded shadow-lg" alt="Gaming">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 featured-games-section">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="bi bi-star-fill me-2" style="color: #ffc107;"></i>Рекомендуемые игры
+        </h2>
+        <div class="row g-4">
+            {% for game in featured_games %}
+            <div class="col-md-6 col-lg-3 animate__animated animate__fadeInUp">
+                <div class="card game-card h-100 shadow-sm">
+                    {% if game.cover_image %}
+                    <img src="{{ game.cover_image.url }}" class="card-img-top game-cover" alt="{{ game.title }}">
+                    {% else %}
+                    <div class="game-cover-placeholder d-flex align-items-center justify-content-center">
+                        <div class="text-center">
+                            <i class="bi bi-controller display-1 mb-2"></i>
+                            <p class="mb-0 fw-bold">{{ game.title }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                        <p class="card-text text-muted small">{{ game.platform }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                {% if game.discount_percentage > 0 %}
+                                <div>
+                                    <span class="badge bg-danger">-{{ game.discount_percentage }}%</span>
+                                    <div>
+                                        <span class="text-decoration-line-through text-muted">{{ game.price }} ₽</span>
+                                        <span class="fs-5 fw-bold text-success">{{ game.final_price }} ₽</span>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="fs-5 fw-bold">{{ game.price }} ₽</span>
+                                {% endif %}
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'shop:game_detail' game.slug %}" class="btn btn-outline-primary btn-sm">
+                                    Подробнее
+                                </a>
+                                <a href="{% url 'shop:add_to_cart' game.id %}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-cart-plus me-1"></i>В корзину
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Рекомендуемые игры пока не добавлены</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 new-games-section">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="bi bi-lightning-fill me-2" style="color: var(--steam-highlight);"></i>Новинки
+        </h2>
+        <div class="row g-4">
+            {% for game in new_games %}
+            <div class="col-md-6 col-lg-3 animate__animated animate__fadeInUp">
+                <div class="card game-card h-100 shadow-sm">
+                    {% if game.cover_image %}
+                    <img src="{{ game.cover_image.url }}" class="card-img-top game-cover" alt="{{ game.title }}">
+                    {% else %}
+                    <div class="game-cover-placeholder d-flex align-items-center justify-content-center">
+                        <div class="text-center">
+                            <i class="bi bi-controller display-1 mb-2"></i>
+                            <p class="mb-0 fw-bold">{{ game.title }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ game.title }}</h5>
+                        <p class="card-text text-muted small">{{ game.platform }}</p>
+                        <div class="mt-auto">
+                            <div class="mb-3">
+                                <span class="fs-5 fw-bold">{{ game.price }} ₽</span>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'shop:game_detail' game.slug %}" class="btn btn-outline-primary btn-sm">
+                                    Подробнее
+                                </a>
+                                <a href="{% url 'shop:add_to_cart' game.id %}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-cart-plus me-1"></i>В корзину
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Новинки пока не добавлены</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 categories-section">
+    <div class="container">
+        <h2 class="text-center mb-5">
+            <i class="bi bi-grid-fill me-2" style="color: var(--steam-highlight);"></i>Категории
+        </h2>
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-4 animate__animated animate__zoomIn">
+                <a href="{% url 'shop:catalog_by_category' category.slug %}" class="text-decoration-none">
+                    <div class="card category-card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            {% if category.icon %}
+                            <img src="{{ category.icon.url }}" alt="{{ category.name }}" class="mb-3" style="height: 80px;">
+                            {% else %}
+                            <i class="bi bi-folder-fill display-1 text-primary mb-3"></i>
+                            {% endif %}
+                            <h4>{{ category.name }}</h4>
+                            <p class="text-muted">{{ category.description|truncatewords:10 }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 features-section">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <div class="feature-item">
+                    <i class="bi bi-lightning-charge-fill display-3 mb-3"></i>
+                    <h5>Мгновенная доставка</h5>
+                    <p class="small">Получите ключ сразу после оплаты</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-item">
+                    <i class="bi bi-shield-check display-3 mb-3"></i>
+                    <h5>Безопасность</h5>
+                    <p class="small">Гарантия подлинности всех ключей</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-item">
+                    <i class="bi bi-percent display-3 mb-3"></i>
+                    <h5>Выгодные цены</h5>
+                    <p class="small">Скидки до 90% на популярные игры</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-item">
+                    <i class="bi bi-headset display-3 mb-3"></i>
+                    <h5>Поддержка 24/7</h5>
+                    <p class="small">Всегда готовы помочь</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

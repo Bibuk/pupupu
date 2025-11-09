@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Оплата заказа #{{ order.order_number }} - Xide{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="text-center mb-4" style="color: var(--steam-highlight);">
+                <i class="bi bi-credit-card me-2"></i>Оплата заказа #{{ order.order_number }}
+            </h2>
+            
+            <div class="row">
+                <div class="col-md-5 mb-4">
+                    <div class="card" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border: 1px solid rgba(102, 192, 244, 0.3);">
+                        <div class="card-body">
+                            <h5 style="color: var(--steam-highlight);">Детали заказа</h5>
+                            <hr style="border-color: rgba(102, 192, 244, 0.2);">
+                            
+                            <div class="mb-3">
+                                <small style="color: var(--steam-text-dark);">Товары:</small>
+                                {% for item in order.items.all %}
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span style="color: var(--steam-text); font-size: 0.9rem;">{{ item.game.title }} x{{ item.quantity }}</span>
+                                        <span style="color: var(--steam-text);">{{ item.total_price }} ₽</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <hr style="border-color: rgba(102, 192, 244, 0.2);">
+                            
+                            <div class="d-flex justify-content-between">
+                                <h5 style="color: var(--steam-highlight);">Итого:</h5>
+                                <h5 style="color: var(--steam-highlight);">{{ order.total_price }} ₽</h5>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: var(--steam-text); font-size: 0.85rem;">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Демо-режим:</strong> Это учебная версия оплаты. Используйте тестовые данные карты.
+                    </div>
+                </div>
+                
+
+                <div class="col-md-7">
+                    <div class="card" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border: 1px solid rgba(102, 192, 244, 0.3);">
+                        <div class="card-body p-4">
+                            <h5 class="mb-4" style="color: var(--steam-highlight);">
+                                <i class="bi bi-credit-card-2-front me-2"></i>Данные карты
+                            </h5>
+                            
+                            <form method="post" action="{% url 'shop:process_payment' order.order_number %}">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label for="card_number" class="form-label" style="color: var(--steam-text);">Номер карты</label>
+                                    <input type="text" class="form-control form-control-lg" id="card_number" name="card_number" 
+                                           placeholder="1234 5678 9012 3456" maxlength="19" required
+                                           style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white; font-family: monospace;">
+                                    <small style="color: var(--steam-text-dark);">Используйте любые 16 цифр для теста</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="card_name" class="form-label" style="color: var(--steam-text);">Имя на карте</label>
+                                    <input type="text" class="form-control form-control-lg" id="card_name" name="card_name" 
+                                           placeholder="IVAN IVANOV" required
+                                           style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white;">
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="expiry" class="form-label" style="color: var(--steam-text);">Срок действия</label>
+                                        <input type="text" class="form-control form-control-lg" id="expiry" name="expiry" 
+                                               placeholder="MM/YY" maxlength="5"
+                                               style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white;">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cvv" class="form-label" style="color: var(--steam-text);">CVV</label>
+                                        <input type="text" class="form-control form-control-lg" id="cvv" name="cvv" 
+                                               placeholder="123" maxlength="3"
+                                               style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102, 192, 244, 0.3); color: white;">
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info mb-3" style="background: rgba(6, 191, 255, 0.1); border: 1px solid rgba(6, 191, 255, 0.3); color: var(--steam-text); font-size: 0.85rem;">
+                                    <i class="bi bi-shield-check me-2"></i>
+                                    Ваши данные защищены SSL-шифрованием
+                                </div>
+                                
+                                <button type="submit" class="btn btn-lg w-100" 
+                                        style="background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%); border: none; font-weight: 600;">
+                                    <i class="bi bi-check-circle me-2"></i>Оплатить {{ order.total_price }} ₽
+                                </button>
+                            </form>
+                            
+                            <div class="text-center mt-3">
+                                <a href="{% url 'shop:order_detail' order.order_number %}" style="color: var(--steam-text-dark); text-decoration: none;">
+                                    <i class="bi bi-arrow-left me-1"></i>Вернуться к заказу
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Форматирование номера карты
+document.getElementById('card_number').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '');
+    let formattedValue = value.match(/.{1,4}/g);
+    e.target.value = formattedValue ? formattedValue.join(' ') : value;
+});
+
+// Форматирование срока действия
+document.getElementById('expiry').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        e.target.value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    } else {
+        e.target.value = value;
+    }
+});
+
+// Только цифры для CVV
+document.getElementById('cvv').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+</script>
+{% endblock %}

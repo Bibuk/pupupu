@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ game.title }} - Xide{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            {% if game.cover_image %}
+            <img src="{{ game.cover_image.url }}" class="img-fluid rounded shadow-lg mb-3" alt="{{ game.title }}">
+            {% else %}
+            <img src="https://via.placeholder.com/500x700?text={{ game.title }}" class="img-fluid rounded shadow-lg mb-3" alt="{{ game.title }}">
+            {% endif %}
+            
+            <div class="row g-2">
+                {% if game.screenshot_1 %}
+                <div class="col-4">
+                    <img src="{{ game.screenshot_1.url }}" class="img-fluid rounded" alt="Screenshot 1">
+                </div>
+                {% endif %}
+                {% if game.screenshot_2 %}
+                <div class="col-4">
+                    <img src="{{ game.screenshot_2.url }}" class="img-fluid rounded" alt="Screenshot 2">
+                </div>
+                {% endif %}
+                {% if game.screenshot_3 %}
+                <div class="col-4">
+                    <img src="{{ game.screenshot_3.url }}" class="img-fluid rounded" alt="Screenshot 3">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <h1 class="mb-3">{{ game.title }}</h1>
+            
+            <div class="mb-3">
+                {% if game.is_new %}
+                <span class="badge bg-success me-2">Новинка</span>
+                {% endif %}
+                {% if game.is_featured %}
+                <span class="badge bg-warning text-dark me-2">Рекомендуем</span>
+                {% endif %}
+                <span class="badge bg-secondary">{{ game.get_platform_display }}</span>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            {% if game.discount_percentage > 0 %}
+                            <div class="mb-2">
+                                <span class="badge bg-danger fs-6">-{{ game.discount_percentage }}%</span>
+                            </div>
+                            <div class="text-decoration-line-through text-muted h5">{{ game.price }} ₽</div>
+                            <div class="display-4 text-success fw-bold">{{ game.final_price }} ₽</div>
+                            {% else %}
+                            <div class="display-4 fw-bold">{{ game.price }} ₽</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-grid gap-2">
+                                {% if game.in_stock %}
+                                <a href="{% url 'shop:add_to_cart' game.id %}" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-cart-plus me-2"></i>Добавить в корзину
+                                </a>
+                                <button class="btn btn-success btn-lg">
+                                    <i class="bi bi-lightning-fill me-2"></i>Купить сейчас
+                                </button>
+                                {% else %}
+                                <button class="btn btn-secondary btn-lg" disabled>
+                                    Нет в наличии
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Информация об игре</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td class="fw-bold">Разработчик:</td>
+                            <td>{{ game.developer }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Издатель:</td>
+                            <td>{{ game.publisher }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Дата выхода:</td>
+                            <td>{{ game.release_date|date:"d.m.Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Категория:</td>
+                            <td>{{ game.category.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Рейтинг:</td>
+                            <td>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                {{ game.rating }}/10
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Просмотры:</td>
+                            <td>{{ game.views }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Описание</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ game.description|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% if related_games %}
+    <section class="mt-5">
+        <h2 class="mb-4">Похожие игры</h2>
+        <div class="row g-4">
+            {% for related_game in related_games %}
+            <div class="col-md-3">
+                <div class="card game-card h-100 shadow-sm">
+                    {% if related_game.cover_image %}
+                    <img src="{{ related_game.cover_image.url }}" class="card-img-top" alt="{{ related_game.title }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/300x400?text={{ related_game.title }}" class="card-img-top" alt="{{ related_game.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ related_game.title }}</h5>
+                        <p class="fw-bold">{{ related_game.price }} ₽</p>
+                        <a href="{% url 'shop:game_detail' related_game.slug %}" class="btn btn-outline-primary btn-sm w-100">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

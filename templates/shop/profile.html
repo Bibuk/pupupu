@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мой профиль - Xide{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border: 1px solid rgba(102, 192, 244, 0.3);">
+                <div class="card-body text-center p-4">
+
+                    <div class="mb-4">
+                        <div style="width: 150px; height: 150px; margin: 0 auto; border-radius: 50%; border: 3px solid var(--steam-highlight); overflow: hidden; background: linear-gradient(135deg, #2a475e 0%, #1b2838 100%); display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-person-circle" style="font-size: 120px; color: var(--steam-highlight);"></i>
+                        </div>
+                    </div>
+                    
+
+                    <h3 class="mb-2" style="color: var(--steam-text);">{{ user.username }}</h3>
+                    <p class="mb-3" style="color: var(--steam-text-dark); font-size: 0.9rem;">
+                        <i class="bi bi-envelope me-1"></i>{{ user.email }}
+                    </p>
+                    
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span style="color: var(--steam-text); font-size: 0.85rem;">Уровень игрока</span>
+                            <span style="color: var(--steam-highlight); font-weight: bold;">
+                                {% widthratio orders|length 1 5 %}
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 8px; background: rgba(0,0,0,0.3);">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {% widthratio orders|length 1 10 %}%; background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);"
+                                 aria-valuenow="{% widthratio orders|length 1 10 %}" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <small style="color: var(--steam-text-dark); font-size: 0.75rem;">
+                            {{ orders|length }} / 10 заказов
+                        </small>
+                    </div>
+                    
+                    <hr style="border-color: rgba(102, 192, 244, 0.2); my-3;">
+                    
+
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <h4 style="color: var(--steam-highlight); margin-bottom: 0;">{{ orders|length }}</h4>
+                            <small style="color: var(--steam-text-dark);">Заказов</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 style="color: var(--steam-highlight); margin-bottom: 0;">
+                                {% widthratio total_spent 1 1 %}
+                            </h4>
+                            <small style="color: var(--steam-text-dark);">Игр</small>
+                        </div>
+                    </div>
+                    
+
+                    <p class="mb-3" style="color: var(--steam-text-dark); font-size: 0.85rem;">
+                        <i class="bi bi-calendar-check me-1"></i>
+                        Участник с {{ user.date_joined|date:"d.m.Y" }}
+                    </p>
+                    
+
+                    <a href="{% url 'shop:edit_profile' %}" class="btn w-100 mb-2" style="background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%); border: none; color: white;">
+                        <i class="bi bi-pencil me-2"></i>Редактировать профиль
+                    </a>
+                    
+                    <a href="{% url 'shop:logout' %}" class="btn btn-outline-danger w-100" style="border-color: rgba(255,82,82,0.5);">
+                        <i class="bi bi-box-arrow-right me-2"></i>Выйти
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="col-md-8">
+            <h2 class="mb-4" style="color: var(--steam-highlight);">
+                <i class="bi bi-person-circle me-2"></i>Личный кабинет
+            </h2>
+            
+            <h3 class="mb-3" style="color: var(--steam-text);">
+                <i class="bi bi-bag-check me-2"></i>История заказов
+            </h3>
+            
+            {% if orders %}
+                <div class="row">
+                    {% for order in orders %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border: 1px solid rgba(102, 192, 244, 0.3);">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 style="color: var(--steam-highlight);">Заказ #{{ order.order_number }}</h5>
+                                        <p class="mb-1" style="color: var(--steam-text-dark); font-size: 0.9rem;">
+                                            {{ order.created_at|date:"d.m.Y H:i" }}
+                                        </p>
+                                    </div>
+                                    <span class="badge 
+                                        {% if order.status == 'PAID' %}bg-success
+                                        {% elif order.status == 'PENDING' %}bg-warning text-dark
+                                        {% elif order.status == 'PROCESSING' %}bg-info
+                                        {% elif order.status == 'COMPLETED' %}bg-primary
+                                        {% else %}bg-secondary
+                                        {% endif %}">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    {% for item in order.items.all|slice:":3" %}
+                                        <small style="color: var(--steam-text-dark); display: block;">
+                                            • {{ item.game.title }} ({{ item.quantity }} шт.)
+                                        </small>
+                                    {% endfor %}
+                                    {% if order.items.count > 3 %}
+                                        <small style="color: var(--steam-text-dark);">
+                                            и ещё {{ order.items.count|add:"-3" }} товар(ов)
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="mb-0" style="color: var(--steam-highlight);">{{ order.total_price }} ₽</h4>
+                                    <a href="{% url 'shop:order_detail' order.order_number %}" 
+                                       class="btn btn-sm" 
+                                       style="background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%); border: none;">
+                                        Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info" style="background: rgba(6, 191, 255, 0.1); border: 1px solid rgba(6, 191, 255, 0.3); color: var(--steam-text);">
+                    <i class="bi bi-info-circle me-2"></i>У вас пока нет заказов. Начните с <a href="{% url 'shop:catalog' %}" style="color: var(--steam-highlight);">каталога игр</a>!
+                </div>
+            {% endif %}
+            
+
+            {% if orders %}
+            <div class="mt-5">
+                <h3 class="mb-3" style="color: var(--steam-text);">
+                    <i class="bi bi-collection me-2"></i>Моя библиотека игр
+                </h3>
+                <div class="row">
+                    {% for order in orders %}
+                        {% for item in order.items.all %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100" style="background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%); border: 1px solid rgba(102, 192, 244, 0.2); transition: all 0.3s ease;">
+                                <div style="position: relative; padding-top: 56.25%; overflow: hidden;">
+                                    {% if item.game.cover_image %}
+                                    <img src="{{ item.game.cover_image.url }}" alt="{{ item.game.title }}"
+                                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                                    {% else %}
+                                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #2a475e 0%, #1b2838 100%); display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-controller" style="font-size: 3rem; color: var(--steam-highlight);"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body p-3">
+                                    <h6 class="mb-2" style="color: var(--steam-text); font-size: 0.95rem; height: 2.4em; overflow: hidden;">
+                                        {{ item.game.title }}
+                                    </h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small style="color: var(--steam-text-dark);">
+                                            <i class="bi bi-check-circle text-success me-1"></i>В библиотеке
+                                        </small>
+                                        <a href="{% url 'shop:game_detail' item.game.slug %}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           style="border-color: var(--steam-highlight); color: var(--steam-highlight); font-size: 0.8rem;">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 192, 244, 0.3) !important;
+        border-color: var(--steam-highlight) !important;
+    }
+    
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+</style>
+{% endblock %}

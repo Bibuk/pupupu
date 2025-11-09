@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог - Xide{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Фильтры</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-3">Категории</h6>
+                    <div class="list-group mb-4">
+                        <a href="{% url 'shop:catalog' %}" 
+                           class="list-group-item list-group-item-action {% if not selected_category %}active{% endif %}">
+                            Все категории
+                        </a>
+                        {% for category in categories %}
+                        <a href="{% url 'shop:catalog_by_category' category.slug %}" 
+                           class="list-group-item list-group-item-action {% if selected_category == category %}active{% endif %}">
+                            {{ category.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                    <h6 class="mb-3">Платформа</h6>
+                    <div class="list-group">
+                        {% for platform_code, platform_name in platforms %}
+                        <a href="?platform={{ platform_code }}" class="list-group-item list-group-item-action">
+                            {{ platform_name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    {% if selected_category %}
+                        {{ selected_category.name }}
+                    {% else %}
+                        Все игры
+                    {% endif %}
+                </h2>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-sort-down me-2"></i>Сортировка
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?sort=-created_at">Новые</a></li>
+                        <li><a class="dropdown-item" href="?sort=price">Цена: по возрастанию</a></li>
+                        <li><a class="dropdown-item" href="?sort=-price">Цена: по убыванию</a></li>
+                        <li><a class="dropdown-item" href="?sort=-rating">По рейтингу</a></li>
+                        <li><a class="dropdown-item" href="?sort=title">По алфавиту</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% for game in games %}
+                <div class="col-md-4 animate__animated animate__fadeIn">
+                    <div class="card game-card h-100 shadow-sm">
+                        {% if game.cover_image %}
+                        <img src="{{ game.cover_image.url }}" class="card-img-top game-cover" alt="{{ game.title }}">
+                        {% else %}
+                        <div class="game-cover-placeholder d-flex align-items-center justify-content-center">
+                            <div class="text-center">
+                                <i class="bi bi-controller display-1 mb-2"></i>
+                                <p class="mb-0 fw-bold">{{ game.title }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if game.discount_percentage > 0 %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-danger">-{{ game.discount_percentage }}%</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ game.title }}</h5>
+                            <p class="card-text text-muted small mb-2">{{ game.platform }}</p>
+                            <p class="card-text small text-truncate">{{ game.short_description }}</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    {% if game.discount_percentage > 0 %}
+                                    <div>
+                                        <div class="text-decoration-line-through text-muted small">{{ game.price }} ₽</div>
+                                        <div class="fs-5 fw-bold text-success">{{ game.final_price }} ₽</div>
+                                    </div>
+                                    {% else %}
+                                    <span class="fs-5 fw-bold">{{ game.price }} ₽</span>
+                                    {% endif %}
+                                    
+                                    <div>
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <span>{{ game.rating }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'shop:game_detail' game.slug %}" class="btn btn-outline-primary btn-sm">
+                                        Подробнее
+                                    </a>
+                                    <a href="{% url 'shop:add_to_cart' game.id %}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-cart-plus me-1"></i>В корзину
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        В этой категории пока нет игр
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
